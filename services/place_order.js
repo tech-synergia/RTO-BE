@@ -1,0 +1,161 @@
+const Order = require("../Model/order");
+const {
+  calculate_price,
+  send_whatsapp_message,
+} = require("../utils/place_order");
+
+const place_order = async (req, res) => {
+  let {
+    state,
+    city,
+    seating,
+    contact_number,
+    // border,
+    tax_mode,
+    tax_type,
+    start_date,
+    end_date,
+    vehicle_number,
+  } = req.body;
+
+  start_date = new Date(start_date);
+  start_date.setHours(0, 0, 0, 0);
+  end_date = new Date(end_date);
+  end_date.setHours(0, 0, 0, 0);
+  current_date = new Date();
+  current_date.setHours(0, 0, 0, 0);
+
+  if (!state || state === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "State is required",
+    });
+  } else if (!city || city === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "City is required",
+    });
+  } else if (!seating || seating === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "Seating Capacity is required",
+    });
+    // } else if(!border || border === '') {
+    //   return res.status(400).json({
+    //     is_success: false,
+    //     message: "Border / Barrier is required"
+    //   })
+  } else if (!tax_mode || tax_mode === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "Tax Mode is required",
+    });
+  } else if (!tax_type || tax_type === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "Tax Type is required",
+    });
+  } else if (contact_number.toString().length != 10 || !contact_number) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Invalid Contact Number",
+    });
+  } else if (!tax_mode || tax_mode === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "Tax Mode is required",
+    });
+  } else if (!start_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Start Date is required",
+    });
+  } else if (start_date < current_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Start Date cannot be less than today",
+    });
+  } else if (!end_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "End Date is required",
+    });
+  } else if (end_date < start_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Start Date cannot be more than End Date",
+    });
+  }
+
+  const params = {
+    state,
+    city,
+    seating,
+    contact_number,
+    // border,
+    tax_mode,
+    tax_type,
+    start_date,
+    end_date,
+    vehicle_number,
+    amount: calculate_price(start_date, end_date, seating),
+  };
+
+  // TODO:SHLOK - make API call for gateway here
+
+  const order = await Order.create(params);
+  send_whatsapp_message(contact_number, params)
+  return res.status(200).json({
+    is_success: true,
+    message: "Order created successfully",
+    data: order,
+  });
+};
+
+const charges = (req, res) => {
+  let { start_date, end_date, seating } = req.query;
+
+  start_date = new Date(start_date);
+  start_date.setHours(0, 0, 0, 0);
+  end_date = new Date(end_date);
+  end_date.setHours(0, 0, 0, 0);
+  current_date = new Date();
+  current_date.setHours(0, 0, 0, 0);
+
+  if (!start_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Start Date is required",
+    });
+  } else if (start_date < current_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Start Date cannot be less than today",
+    });
+  } else if (!end_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "End Date is required",
+    });
+  } else if (end_date < start_date) {
+    return res.status(400).json({
+      is_success: false,
+      message: "Start Date cannot be more than End Date",
+    });
+  } else if (!seating || seating === "") {
+    return res.status(400).json({
+      is_success: false,
+      message: "Seating Capacity is required",
+    });
+  }
+
+  let charges = calculate_price(start_date, end_date, seating);
+
+  res.status(200).json({
+    is_success: true,
+    message: "Charges calculated",
+    data: charges,
+  });
+};
+
+module.exports = { place_order, charges };
