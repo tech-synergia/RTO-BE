@@ -5,6 +5,7 @@ const {
 } = require("../utils/place_order");
 
 const place_order = async (req, res) => {
+  console.log(req.body)
   let {
     state,
     city,
@@ -16,6 +17,7 @@ const place_order = async (req, res) => {
     start_date,
     end_date,
     vehicle_number,
+    chasis_number,
   } = req.body;
 
   start_date = new Date(start_date);
@@ -88,10 +90,11 @@ const place_order = async (req, res) => {
   }
 
   const params = {
-    state,
-    city,
+    chasis_number: tax_type === "road_tax" ? chasis_number : null,
+    state: tax_type === "road_tax" ? null : state,
+    city: tax_type === "road_tax" ? null : city,
+    contact_number: tax_type === "road_tax" ? null : contact_number,
     seating,
-    contact_number,
     // border,
     tax_mode,
     tax_type,
@@ -104,7 +107,7 @@ const place_order = async (req, res) => {
   // TODO:SHLOK - make API call for gateway here
 
   const order = await Order.create(params);
-  send_whatsapp_message(contact_number, params)
+  send_whatsapp_message(contact_number, params);
   return res.status(200).json({
     is_success: true,
     message: "Order created successfully",
