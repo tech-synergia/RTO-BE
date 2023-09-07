@@ -5,13 +5,11 @@ const {
 } = require("../utils/place_order");
 
 const place_order = async (req, res) => {
-  console.log(req.body)
   let {
     state,
     city,
     seating,
     contact_number,
-    // border,
     tax_mode,
     tax_type,
     start_date,
@@ -20,89 +18,119 @@ const place_order = async (req, res) => {
     chasis_number,
   } = req.body;
 
-  start_date = new Date(start_date);
-  start_date.setHours(0, 0, 0, 0);
-  end_date = new Date(end_date);
-  end_date.setHours(0, 0, 0, 0);
-  current_date = new Date();
-  current_date.setHours(0, 0, 0, 0);
-
-  if (!state || state === "") {
-    return res.status(400).json({
-      is_success: false,
-      message: "State is required",
-    });
-  } else if (!city || city === "") {
-    return res.status(400).json({
-      is_success: false,
-      message: "City is required",
-    });
-  } else if (!seating || seating === "") {
-    return res.status(400).json({
-      is_success: false,
-      message: "Seating Capacity is required",
-    });
-    // } else if(!border || border === '') {
-    //   return res.status(400).json({
-    //     is_success: false,
-    //     message: "Border / Barrier is required"
-    //   })
-  } else if (!tax_mode || tax_mode === "") {
-    return res.status(400).json({
-      is_success: false,
-      message: "Tax Mode is required",
-    });
-  } else if (!tax_type || tax_type === "") {
+  if (!tax_type || tax_type === "") {
     return res.status(400).json({
       is_success: false,
       message: "Tax Type is required",
     });
-  } else if (contact_number.toString().length != 10 || !contact_number) {
-    return res.status(400).json({
-      is_success: false,
-      message: "Invalid Contact Number",
-    });
-  } else if (!tax_mode || tax_mode === "") {
-    return res.status(400).json({
-      is_success: false,
-      message: "Tax Mode is required",
-    });
-  } else if (!start_date) {
-    return res.status(400).json({
-      is_success: false,
-      message: "Start Date is required",
-    });
-  } else if (start_date < current_date) {
-    return res.status(400).json({
-      is_success: false,
-      message: "Start Date cannot be less than today",
-    });
-  } else if (!end_date) {
-    return res.status(400).json({
-      is_success: false,
-      message: "End Date is required",
-    });
-  } else if (end_date < start_date) {
-    return res.status(400).json({
-      is_success: false,
-      message: "Start Date cannot be more than End Date",
-    });
   }
 
-  const params = {
-    chasis_number: tax_type === "road_tax" ? chasis_number : null,
-    state: tax_type === "road_tax" ? null : state,
-    city: tax_type === "road_tax" ? null : city,
-    contact_number: tax_type === "road_tax" ? null : contact_number,
-    seating,
-    // border,
-    tax_mode,
-    tax_type,
-    start_date,
-    end_date,
-    vehicle_number,
-    amount: calculate_price(start_date, end_date, seating),
-  };
+  let params;
+
+  if (tax_type === 'road_tax') {
+    if (!seating || seating === "") {
+      return res.status(400).json({
+        is_success: false,
+        message: "Seating Capacity is required",
+      })
+    } else if (!tax_mode || tax_mode === "") {
+      return res.status(400).json({
+        is_success: false,
+        message: "Tax Mode is required",
+      });
+    } else if (contact_number.toString().length != 10 || !contact_number) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Invalid Contact Number",
+      });
+    } else if (chasis_number === '' || !chasis_number) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Chasis Number is required",
+      });
+    } else if (vehicle_number === '' || !vehicle_number) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Vehicle Number is required",
+      });
+    }
+
+    params = {
+      contact_number,
+      seating,
+      tax_mode,
+      tax_type,
+      vehicle_number,
+      chasis_number
+    };
+  } else {
+    start_date = new Date(start_date);
+    start_date.setHours(0, 0, 0, 0);
+    end_date = new Date(end_date);
+    end_date.setHours(0, 0, 0, 0);
+    current_date = new Date();
+    current_date.setHours(0, 0, 0, 0);
+
+    if (!state || state === "") {
+      return res.status(400).json({
+        is_success: false,
+        message: "State is required",
+      });
+    } else if (!city || city === "") {
+      return res.status(400).json({
+        is_success: false,
+        message: "City is required",
+      });
+    } else if (!seating || seating === "") {
+      return res.status(400).json({
+        is_success: false,
+        message: "Seating Capacity is required",
+      })
+    } else if (!tax_mode || tax_mode === "") {
+      return res.status(400).json({
+        is_success: false,
+        message: "Tax Mode is required",
+      });
+    } else if (contact_number.toString().length != 10 || !contact_number) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Invalid Contact Number",
+      });
+    } else if (!start_date) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Start Date is required",
+      });
+    } else if (start_date < current_date) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Start Date cannot be less than today",
+      });
+    } else if (!end_date) {
+      return res.status(400).json({
+        is_success: false,
+        message: "End Date is required",
+      });
+    } else if (end_date < start_date) {
+      return res.status(400).json({
+        is_success: false,
+        message: "Start Date cannot be more than End Date",
+      });
+    }
+
+    params = {
+      state,
+      city,
+      contact_number,
+      seating,
+      tax_mode,
+      tax_type,
+      start_date,
+      end_date,
+      vehicle_number,
+      amount: calculate_price(start_date, end_date, seating),
+    };
+  }
 
   // TODO:SHLOK - make API call for gateway here
 
