@@ -45,33 +45,47 @@ const send_whatsapp_message = (contact_number, data) => {
 };
 
 const client_whatsapp_message = (params) => {
-  const msg = `Your order is confirmed. The details are mentioned below.\n*State*: ${
-    params.state
-  }\n*City*: ${params.city}\n*Vehicle Number*: ${
-    params.vehicle_number
-  }\n*Seating Capacity*: ${
-    params.seating
-  }\n*Start Date*: ${params.start_date.getDate()}-${
-    params.start_date.getMonth() + 1
-  }-${params.start_date.getFullYear()}\n*End Date*: ${params.end_date.getDate()}-${
-    params.end_date.getMonth() + 1
-  }-${params.end_date.getFullYear()}\n*Amount*: ${params.amount.total_amount}`;
+  let msg;
+  if (params.tax_type === "road_tax") {
+    msg = `Your order is confirmed. The details are mentioned below.\n*Vehicle Number*: ${params.vehicle_number}\n*Seating Capacity*: ${params.seating}\n*Chasis Number*: ${params.chasis_number}\n*Tax Mode*: ${params.tax_mode}`;
+  } else {
+    msg = `Your order is confirmed. The details are mentioned below.\n*State*: ${
+      params.state
+    }\n*City*: ${params.city}\n*Vehicle Number*: ${
+      params.vehicle_number
+    }\n*Seating Capacity*: ${
+      params.seating
+    }\n*Start Date*: ${params.start_date.getDate()}-${
+      params.start_date.getMonth() + 1
+    }-${params.start_date.getFullYear()}\n*End Date*: ${params.end_date.getDate()}-${
+      params.end_date.getMonth() + 1
+    }-${params.end_date.getFullYear()}\n*Amount*: ${
+      params.amount.total_amount
+    }`;
+  }
 
   return msg;
 };
 
 const admin_whatsapp_message = (params) => {
-  const msg = `New Order Received. The details are mentioned below.\n*State*: ${
-    params.state
-  }\n*City*: ${params.city}\n*Vehicle Number*: ${
-    params.vehicle_number
-  }\n*Seating Capacity*: ${
-    params.seating
-  }\n*Start Date*: ${params.start_date.getDate()}-${
-    params.start_date.getMonth() + 1
-  }-${params.start_date.getFullYear()}\n*End Date*: ${params.end_date.getDate()}-${
-    params.end_date.getMonth() + 1
-  }-${params.end_date.getFullYear()}\n*Amount*: ${params.amount.total_amount}`;
+  let msg;
+  if (params.tax_type === "road_tax") {
+    msg = `New Order Received. The details are mentioned below.\n*Type*: ${params.tax_type}\n*Vehicle Number*: ${params.vehicle_number}\n*Seating Capacity*: ${params.seating}\n*Chasis Number*: ${params.chasis_number}\n*Tax Mode*: ${params.tax_mode}`;
+  } else {
+    msg = `New Order Received. The details are mentioned below.\n*State*: ${
+      params.state
+    }\n*City*: ${params.city}\n*Vehicle Number*: ${
+      params.vehicle_number
+    }\n*Seating Capacity*: ${
+      params.seating
+    }\n*Start Date*: ${params.start_date.getDate()}-${
+      params.start_date.getMonth() + 1
+    }-${params.start_date.getFullYear()}\n*End Date*: ${params.end_date.getDate()}-${
+      params.end_date.getMonth() + 1
+    }-${params.end_date.getFullYear()}\n*Amount*: ${
+      params.amount.total_amount
+    }`;
+  }
 
   return msg;
 };
