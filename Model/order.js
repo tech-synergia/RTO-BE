@@ -3,12 +3,10 @@ const mongoose = require("mongoose");
 const order_schema = new mongoose.Schema(
   {
     city: {
-      type: String,
-      required: [true, "City is required"],
+      type: String
     },
     state: {
-      type: String,
-      required: [true, "State is required"],
+      type: String
     },
     seating: {
       type: Number,
@@ -33,27 +31,25 @@ const order_schema = new mongoose.Schema(
     vehicle_number: {
       type: String
     },
+    chasis_number: {
+      type: String
+    },
     amount: {
       service_charge: {
         type: Number,
-        required: true
       },
       tax:{
         type: Number,
-        required: true
       },
       total_amount: {
         type: Number,
-        required: true
       }
     },
     start_date: {
-      type: String,
-      required: [true, "Start Date is required"],
+      type: String
     },
     end_date: {
-      type: String,
-      required: [true, "End Date is required"],
+      type: String
     },
   },
   {
