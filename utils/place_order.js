@@ -21,7 +21,7 @@ const calculate_price = (start_date, end_date, seating) => {
 const send_whatsapp_message = (contact_number, data) => {
   client.messages
     .create({
-      body: client_whatsapp_message(data),
+      body: client_whatsapp_message(data, contact_number),
       from: `whatsapp:${process.env.TWILIO_CONTACT_NUMBER}`,
       to: `whatsapp:+91${contact_number}`,
     })
@@ -33,7 +33,7 @@ const send_whatsapp_message = (contact_number, data) => {
 
   client.messages
     .create({
-      body: admin_whatsapp_message(data),
+      body: admin_whatsapp_message(data, contact_number),
       from: `whatsapp:${process.env.TWILIO_CONTACT_NUMBER}`,
       to: `whatsapp:+91${process.env.ADMIN_CONTACT_NUMBER}`,
     })
@@ -44,10 +44,10 @@ const send_whatsapp_message = (contact_number, data) => {
     );
 };
 
-const client_whatsapp_message = (params) => {
+const client_whatsapp_message = (params, contact_number) => {
   let msg;
   if (params.tax_type === "road_tax") {
-    msg = `Your order is confirmed. The details are mentioned below.\n*Vehicle Number*: ${params.vehicle_number}\n*Seating Capacity*: ${params.seating}\n*Chasis Number*: ${params.chasis_number}\n*Tax Mode*: ${params.tax_mode}`;
+    msg = `Your order is confirmed. The details are mentioned below.\n*Vehicle Number*: ${params.vehicle_number}\n*Seating Capacity*: ${params.seating}\n*Chasis Number*: ${params.chasis_number}\n*Tax Mode*: ${params.tax_mode}\n*Contact Number*: ${contact_number}`;
   } else {
     msg = `Your order is confirmed. The details are mentioned below.\n*State*: ${
       params.state
@@ -61,16 +61,16 @@ const client_whatsapp_message = (params) => {
       params.end_date.getMonth() + 1
     }-${params.end_date.getFullYear()}\n*Amount*: ${
       params.amount.total_amount
-    }`;
+    }\n*Contact Number*: ${contact_number}`;
   }
 
   return msg;
 };
 
-const admin_whatsapp_message = (params) => {
+const admin_whatsapp_message = (params, contact_number) => {
   let msg;
   if (params.tax_type === "road_tax") {
-    msg = `New Order Received. The details are mentioned below.\n*Type*: ${params.tax_type}\n*Vehicle Number*: ${params.vehicle_number}\n*Seating Capacity*: ${params.seating}\n*Chasis Number*: ${params.chasis_number}\n*Tax Mode*: ${params.tax_mode}`;
+    msg = `New Order Received. The details are mentioned below.\n*Type*: ${params.tax_type}\n*Vehicle Number*: ${params.vehicle_number}\n*Seating Capacity*: ${params.seating}\n*Chasis Number*: ${params.chasis_number}\n*Tax Mode*: ${params.tax_mode}\n*Contact Number*: ${contact_number}`;
   } else {
     msg = `New Order Received. The details are mentioned below.\n*State*: ${
       params.state
@@ -84,7 +84,7 @@ const admin_whatsapp_message = (params) => {
       params.end_date.getMonth() + 1
     }-${params.end_date.getFullYear()}\n*Amount*: ${
       params.amount.total_amount
-    }`;
+    }\n*Contact Number*: ${contact_number}`;
   }
 
   return msg;
